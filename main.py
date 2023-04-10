@@ -83,7 +83,7 @@ def load_numerai_data():
 
     return train_df, validation_df, feats
 
-def objective(trial):
+def objective(trial, input_dim):
     # Hyperparameters to optimize
     hidden_dim = trial.suggest_int("hidden_dim", 32, 128)
     h = trial.suggest_float("h", 0.01, 0.1)
@@ -122,7 +122,7 @@ y_train, y_val = y_train.to(device), y_val.to(device)
 
 
 study = optuna.create_study(direction="minimize")
-study.optimize(objective, n_trials=50)
+study.optimize(lambda trial: objective(trial, len(feats)), n_trials=50)
 
 print("Best trial:")
 print(f"  Value: {study.best_trial.value}")
