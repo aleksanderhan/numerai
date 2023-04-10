@@ -10,7 +10,7 @@ import optuna
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
