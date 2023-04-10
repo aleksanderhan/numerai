@@ -6,6 +6,7 @@ from numerapi import NumerAPI
 from sklearn.preprocessing import StandardScaler
 from torch.optim import Adam
 import optuna
+import torch.nn.functional as F
 
 import logging
 
@@ -33,13 +34,6 @@ class ODEFunc(nn.Module):
         y = self.dropout(y)
         y = self.fc3(y)
         return y
-
-def runge_kutta_4(func, y0, t, h):
-    k1 = func(t, y0)
-    k2 = func(t + h / 2, y0 + h * k1 / 2)
-    k3 = func(t + h / 2, y0 + h * k2 / 2)
-    k4 = func(t + h, y0 + h * k3)
-    return y0 + (h / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
 
 from torchdiffeq import odeint
 
