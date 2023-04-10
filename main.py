@@ -7,6 +7,12 @@ from sklearn.preprocessing import StandardScaler
 from torch.optim import Adam
 import optuna
 
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 
 class ODEFunc(nn.Module):
     def __init__(self, input_dim, hidden_dim):
@@ -91,32 +97,30 @@ def objective(trial, input_dim):
     epochs = trial.suggest_int("epochs", 50, 150)
 
     # Create DeepODE model
-    model = DeepODE(input_dim, hidden_dim, h).to(device)
+    model = DeepODE(input_dim, hidden_dim).to(device)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     criterion = nn.MSELoss()
 
     # Training loop
     for epoch in range(epochs):
         optimizer.zero_grad()
-        y_pred = model(X_train, t=10)
+        y_pred = model(X_train, torch.tensor([0.0, 10.0], device=device))
         loss = criterion(y_pred, y_train)
         loss.backward()
         optimizer.step()
 
     # Compute validation loss
     with torch.no_grad():
-        y_val_pred = model(X_val, t=10)
+        y_val_pred = model(X_val, torch.tensor([0.0, 10.0], device=device))
         val_loss = criterion(y_val_pred, y_val)
 
     return val_loss.item()
-
 
 train_df, validation_df, feats = load_numerai_data()
 
 X_train, y_train = preprocess_data(train_df, feats)
 X_val, y_val = preprocess_data(validation_df, feats)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 X_train, X_val = X_train.to(device), X_val.to(device)
 y_train, y_val = y_train.to(device), y_val.to(device)
 
