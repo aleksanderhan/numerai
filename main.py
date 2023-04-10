@@ -111,7 +111,7 @@ def objective(trial):
     return val_loss.item()
 
 
-train_df, validation_df = load_numerai_data()
+train_df, validation_df, feats = load_numerai_data()
 
 X_train, y_train = preprocess_data(train_df)
 X_val, y_val = preprocess_data(validation_df)
