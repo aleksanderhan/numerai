@@ -113,8 +113,8 @@ def objective(trial):
 
 train_df, validation_df, feats = load_numerai_data()
 
-X_train, y_train = preprocess_data(train_df)
-X_val, y_val = preprocess_data(validation_df)
+X_train, y_train = preprocess_data(train_df, feats)
+X_val, y_val = preprocess_data(validation_df, feats)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 X_train, X_val = X_train.to(device), X_val.to(device)
